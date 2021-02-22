@@ -198,6 +198,9 @@ enum event_type
     EVENT_EXEC,
     EVENT_EXIT,
     EVENT_INVALIDATE_DENTRY,
+    EVENT_SETUID,
+    EVENT_SETGID,
+    EVENT_CAPSET,
     EVENT_MAX, // has to be the last one
     EVENT_MAX_ROUNDED_UP = 32, // closest power of 2 that is bigger than EVENT_MAX
 };
@@ -219,6 +222,9 @@ enum syscall_type
     SYSCALL_REMOVEXATTR = 1 << EVENT_REMOVEXATTR,
     SYSCALL_EXEC        = 1 << EVENT_EXEC,
     SYSCALL_FORK        = 1 << EVENT_FORK,
+    SYSCALL_SETUID      = 1 << EVENT_SETUID,
+    SYSCALL_SETGID      = 1 << EVENT_SETGID,
+    SYSCALL_CAPSET      = 1 << EVENT_CAPSET,
 };
 
 struct kevent_t {
@@ -262,6 +268,14 @@ struct file_t {
     struct file_metadata_t metadata;
 };
 
+void __attribute__((always_inline)) copy_file_t(struct file_t* src, struct file_t* dst) {
+    dst->inode = src->inode;
+    dst->mount_id = src->mount_id;
+    dst->overlay_numlower = src->overlay_numlower;
+    dst->path_id = src->path_id;
+    copy_file_metadata(&src->metadata, &dst->metadata);
+}
+
 struct syscall_t {
     s64 retval;
 };
@@ -269,8 +283,6 @@ struct syscall_t {
 struct process_context_t {
     u32 pid;
     u32 tid;
-    u32 uid;
-    u32 gid;
 };
 
 struct container_context_t {
