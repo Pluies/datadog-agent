@@ -223,9 +223,9 @@ int sched_process_fork(struct _tracepoint_sched_process_fork *args) {
             event.proc_entry.executable.overlay_numlower = parent_proc_entry->executable.overlay_numlower;
             event.proc_entry.executable.mount_id = parent_proc_entry->executable.mount_id;
             event.proc_entry.executable.path_id = parent_proc_entry->executable.path_id;
+            event.proc_entry.executable.metadata = parent_proc_entry->executable.metadata;
             event.proc_entry.exec_timestamp = parent_proc_entry->exec_timestamp;
 
-            copy_file_metadata(&parent_proc_entry->executable.metadata, &event.proc_entry.executable.metadata);
             copy_tty_name(event.proc_entry.tty_name, parent_proc_entry->tty_name);
 
             // fetch container context
